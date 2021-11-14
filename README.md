@@ -1,6 +1,6 @@
 "# FursuitWebcam" 
 
-![Screenshot](fursuitai.png)
+![Screenshot](fursuitdemo.png)
 
 I have a neural network I've been working on for a while. It takes an image and tries to determine which fursuit it is. Until now, it's just been a Telegram bot.
 
