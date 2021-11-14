@@ -1,0 +1,16 @@
+Can RainRattie's AI recognize your fursuit?
+
+The predicted fursuit and its confidence is displayed with the image.
+
+It will always display the best match so even if there's no fursuit or a fursuit not in its training set, it will always display something, usually with low confidence.
+
+Don't have a fursuit? Try a drawing, plush, or an image on your phone.
+
+Nothing on this webcam is streamed or saved.
+
+You can interact with it online at @rainratbot on Telegram
+
+You can teach it at @rainratcrowdsourcebot on Telegram, but the copy on this computer was frozen before this convention, so no changes will be reflected until after the con.
+
+How many fursuits does it know? 682. Message @rainratbot with /activefursuitlist to see them.
+
