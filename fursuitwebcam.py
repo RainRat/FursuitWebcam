@@ -5,7 +5,7 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 
 
-csv_reader = csv.reader(open('sqlresults.csv'))
+csv_reader = csv.reader(open('fursuitlookup.csv'))
 fursuitnames=[]
 for row in csv_reader:
     fursuitnames.append(row)
