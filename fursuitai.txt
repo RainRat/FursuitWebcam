@@ -12,5 +12,5 @@ You can interact with it online at @rainratbot on Telegram
 
 You can teach it at @rainratcrowdsourcebot on Telegram, but the copy on this computer was frozen before this convention, so no changes will be reflected until after the con.
 
-How many fursuits does it know? 682. Message @rainratbot with /activefursuitlist to see them.
+How many fursuits does it know? 686. Message @rainratbot with /activefursuitlist to see them.
 

@@ -11,7 +11,7 @@ To use, you'll need a computer with a webcam.
 1. Install python, and the packages opencv and tensorflow.
 2. type "python fursuitwebcam.py"
 3. Open the file "fursuitai.txt" in a Notepad window and put it alongside the webcam window, so that passersby understand, or maybe even print it out.
-4. Place it somewhere where passersby will be visble in the webcam and can see the screen.
+4. Place it somewhere where passersby will be visble in the webcam and can see the screen. Good lighting is essential.
 5. Make sure the power-saving settings won't turn off the screen.
 6. Press "q" in the window when you are done.
 
