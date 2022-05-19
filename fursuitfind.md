@@ -18,7 +18,7 @@ Under Data, turn on the Filter
 
 ![Screenshot](ff4.png)
 
-(optional) Format numfursuitconfidence and fursuitnamconfidence as a percentage.
+(optional) Format numfursuitconfidence and fursuitnameconfidence as a percentage.
 
 ![Screenshot](ff5.png)
 
@@ -30,5 +30,9 @@ Under Data, turn on the Filter
 
 ![Screenshot](ff7.png)
 
-(optional) Let's sort by fursuitnameconfidence in descending order. The ones that the network is most confident in will be at the top. You can now let the fursuit owners know that you have photos ready for them. Or tag them in your favourite fursuit photo tagging website.
+(optional) Let's sort by fursuitnameconfidence in descending order. 
+
+![Screenshot](ff8.png)
+
+All done! The ones that the network is most confident in will be at the top. You can now let the fursuit owners know that you have photos ready for them. Or tag them in your favourite fursuit photo tagging website.
 
