@@ -2,6 +2,7 @@ import cv2
 import csv
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input
 import numpy as np
 from os import listdir
 from os.path import isfile, join, isdir
@@ -42,9 +43,10 @@ for fn in fndict:
     test_image = cv2.cvtColor(squareframe, cv2.COLOR_BGR2RGB)
     test_image = image.img_to_array(test_image)
     test_image = np.expand_dims(test_image, axis=0)
-    test_image=test_image/255.0
+    test_image=test_image/255.
+    mobilenet_test_image=np.copy(preprocess_input(test_image*255.)) #mobilenet only!!!! 
     
-    fursuitnameresult = (modelfursuitname.predict(test_image, batch_size=1))[0]
+    fursuitnameresult = (modelfursuitname.predict(mobilenet_test_image, batch_size=1))[0]
     maxconname=0.
     for idx, val in enumerate(fursuitnameresult):
         if val>maxconname:

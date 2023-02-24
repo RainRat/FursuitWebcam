@@ -10,11 +10,14 @@ from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_i
 from tensorflow.keras.backend import clear_session
 from time import sleep
 
-with open('apikey.txt', 'r') as file:
-    fursuitwebcambot = file.readline().strip()
-    targetgroup = int(file.readline().strip())
-
-bot = telegram.Bot(token=fursuitwebcambot)
+fursuitwebcambot=''
+try:
+    with open('apikey.txt', 'r') as file:
+        fursuitwebcambot = file.readline().strip()
+        targetgroup = int(file.readline().strip())
+        bot = telegram.Bot(token=fursuitwebcambot)
+except FileNotFoundError:
+    print("Telegram API key file not found. Running in local-only mode...")
 
 modelmode='i' #"c"=rainratcrowdsourcebot, "i"=imagenet
 
@@ -37,7 +40,7 @@ while True:
     cvw=cv2.waitKey(1) & 0xFF
     if cvw == ord('q'):
         break
-    elif cvw == ord('d'):
+    elif cvw == ord('d') and fursuitwebcambot!='':
         cv2.imwrite('tempimg.png', frame)
         bot.send_photo(chat_id=targetgroup, photo=open('tempimg.png','rb'))
     elif cvw == ord('i'): 
