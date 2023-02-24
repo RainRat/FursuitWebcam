@@ -1,4 +1,4 @@
-"# FursuitFind" 
+# FursuitFind
 
 Hooked up my fursuit identification network to a python program you can just point at a directory and let it work.
 
