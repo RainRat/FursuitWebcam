@@ -1,4 +1,4 @@
-"# FursuitWebcam" 
+# FursuitWebcam
 
 ![Screenshot](fursuitdemo.png)
 
