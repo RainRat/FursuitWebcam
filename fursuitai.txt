@@ -4,7 +4,7 @@ It will show the top 5 results and their confidence.
 
 Don't have a fursuit? Try a drawing, plush, or an image on your phone.
 
-How many fursuits does it know? 980. Message @rainratbot with /activefursuitlist to see them.
+How many fursuits does it know? 984. Message @rainratbot with /activefursuitlist to see them.
 
 i - Imagenet -- An off-the-shelf network that knows 1,000 categories.
 
