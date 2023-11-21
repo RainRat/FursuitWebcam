@@ -18,3 +18,8 @@ To use, you'll need a computer with a webcam.
 I wrote this the night before an event, so there's redundant code and could be made more flexible. Happy to accept contributions.
 
 If you do plan to take it to a convention, let me know, and I'll try to have a up-to-date neural network ready for you with the latest changes by the start of the event.
+
+## Legal
+
+Shutter sound from https://pixabay.com/sound-effects/camera-13695/
+OpenAI says they don't use data from their ChatGPT APIs to train models, but it's not under my control.

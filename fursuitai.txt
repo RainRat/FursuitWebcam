@@ -1,18 +1,25 @@
 What will the AI think your fursuit is?
 
-It will show the top 5 results and their confidence.
-
 Don't have a fursuit? Try a drawing, plush, or an image on your phone.
 
-How many fursuits does it know? 984. Message @rainratbot with /activefursuitlist to see them.
+Models: 
 
-i - Imagenet -- An off-the-shelf network that knows 1,000 categories.
+1. Custom fursuit identification model. Knows 1021 fursuits. Message @rainratbot with /activefursuitlist to see them. Taught via @rainratcrowdsourcebot on Telegram. (The copy on this computer was frozen before this convention, so no changes will be reflected until after the con.) 
 
-c - Crowdsourced fursuit identification network. Taught via @rainratcrowdsourcebot on Telegram. (The copy on this computer was frozen before this convention, so no changes will be reflected until after the con.)
-d - Dump current image to @furryphotodump on Telegram -- Other than that, nothing on this webcam is streamed or saved.
+2. Imagenet -- An off-the-shelf network that knows 1,000 categories.
 
-s - Slower
+3. YOLO -- An off-the-shelf network that can draw a box around the object.
 
-f - Faster
+4. ChatGPT Vision -- The computer vision model on OpenAI's servers. The webcam will just display the image. When you press the post button, it will send the image to be processed by OpenAI, then the image will be posted image along with the caption to @furryphotodump on Telegram. OpenAI says that data from the API won't be used to train models.
 
-p - Pause
+---
+
+Left or Right - Cycle between models
+
+Action buttons or "d" - Post current image to @furryphotodump on Telegram -- Other than that, nothing on this webcam is streamed or saved.
+
+Down - Slower
+
+Up - Faster
+
+Start or "p" - Pause

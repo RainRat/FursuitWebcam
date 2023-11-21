@@ -2,3 +2,6 @@
 *.jpg
 apikey.txt
 tempimg.png
+*.pt
+processing.log
+settings_private.ini
