@@ -5,7 +5,6 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input
 import numpy as np
 import os
-#from os.path import isfile, join, isdir
 import argparse
 from tqdm import tqdm
 import logging
@@ -17,11 +16,10 @@ def getAllFilesRecursive(root):
 
 def preprocess_image(filename):
     frame = cv2.imread(filename)
-    squareframe = cv2.resize(frame, INPUT_SIZE)
-    test_image = cv2.cvtColor(squareframe, cv2.COLOR_BGR2RGB)
-    test_image = image.img_to_array(test_image)
-    test_image = np.expand_dims(test_image, axis=0) / 255.0
-    mobilenet_test_image = np.copy(preprocess_input(test_image * 255.0))
+    frame = cv2.resize(frame, INPUT_SIZE)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) / 255.0
+    test_image = np.expand_dims(image.img_to_array(frame), axis=0)
+    mobilenet_test_image = preprocess_input(np.copy(test_image) * 255.0)
     return test_image, mobilenet_test_image
 
 
