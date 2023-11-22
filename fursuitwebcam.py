@@ -10,7 +10,6 @@ from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.applications.imagenet_utils import decode_predictions
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input
 from tensorflow.keras.backend import clear_session
-from time import sleep
 import asyncio
 import pyautogui
 import base64
@@ -58,14 +57,14 @@ BUTTON_MAP= {
   8: 'pause'
 }
 
-def update_status_bar(screen, model_list, modelmode):
+def update_status_bar(screen, model_list_status, modelmode):
     bar_height = 25
     screen_width = screen.get_width()
     section_width = screen_width // len(model_list)
     active_color = (0, 255, 0)
     inactive_color = (255, 255, 255)
 
-    for i, model_name in enumerate(model_list):
+    for i, model_name in enumerate(model_list_status):
         color = active_color if i == modelmode else inactive_color
         pygame.draw.rect(screen, color, [i * section_width, 0, section_width, bar_height])
         font = pygame.font.SysFont(None, 24)
@@ -152,6 +151,7 @@ async def main():
                         } ], )
                     caption_str=caption_text + "\r\n" + response.choices[0].message.content
                 except Exception as e:
+                    print(f"Error: {e}")
                     caption_str = "No caption. Error connecting to GPT."
             try:
                 _, buffer = cv2.imencode(".png", image_cv2)
@@ -159,9 +159,10 @@ async def main():
                 await bot.send_photo(chat_id=tg_group, photo=bio, caption=caption_str)
                 info_bar = "Sent photo to Telegram: " + tg_name
             except Exception as e:
+                print(f"Error: {e}")
                 info_bar = "Failed to send photo to Telegram"
 
-        elif input_str == 'right' or input_str == 'left':
+        elif input_str in ('right', 'left'):
             modelmode = (modelmode + (1 if input_str == 'right' else -1)) % len(model_list)
             info_bar="Switched to "+ model_list[modelmode]
         elif input_str == 'slow':
@@ -191,7 +192,7 @@ async def main():
         if preds %500==0: #ran into memory leak in tensorflow
             clear_session()
             gc.collect()
-        ret, image_orig = cap.read()
+        _, image_orig = cap.read()
         image_rgb = cv2.cvtColor(image_orig, cv2.COLOR_BGR2RGB)
 
         image_mobilenet = cv2.resize(image_rgb, (224,224))
@@ -215,7 +216,7 @@ async def main():
         target_width = target_height*(image_orig_y/image_orig_x)
         image_cv2 = cv2.resize(image_orig, (int(target_width), int(target_height)))
 
-        if modelmode==0 or modelmode==1:
+        if modelmode in (0, 1):
             for i in range(5):
                 label = f"{labelname[i]} {confidence[i]:.0%}"
                 cv2.putText(image_cv2, label, (20, 75 + i*50), LABEL_FONT, LABEL_SCALE, LABEL_COLOR, LABEL_THICKNESS)
