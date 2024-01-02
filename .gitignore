@@ -5,3 +5,4 @@ tempimg.png
 *.pt
 processing.log
 settings_private.ini
+*.csv

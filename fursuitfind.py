@@ -15,18 +15,26 @@ def getAllFilesRecursive(root):
     return [os.path.join(dp, f) for dp, dn, filenames in os.walk(root) for f in filenames]
 
 def preprocess_image(filename):
-    frame = cv2.imread(filename)
-    frame = cv2.resize(frame, INPUT_SIZE)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) / 255.0
-    test_image = np.expand_dims(image.img_to_array(frame), axis=0)
-    mobilenet_test_image = preprocess_input(np.copy(test_image) * 255.0)
-    return test_image, mobilenet_test_image
-
+    try:
+        frame = cv2.imread(filename)
+        if frame is None:
+            raise ValueError(f"Image not found or unable to read: {filename}")
+        frame = cv2.resize(frame, INPUT_SIZE)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) / 255.0
+        test_image = np.expand_dims(image.img_to_array(frame), axis=0)
+        mobilenet_test_image = preprocess_input(np.copy(test_image) * 255.0)
+        return test_image, mobilenet_test_image
+    except Exception as e:
+        logging.exception(f"Error in preprocessing image {filename}: {e}")
+        return None, None
 
 def process_image_and_write_results(writer, fn, model_custom_name, model_custom_count, custom_names, custom_counts):
     '''This sub will just refer to the model as "custom" so it can be repurposed.'''
     try:
         test_image, mobilenet_test_image = preprocess_image(fn)
+        if test_image is None or mobilenet_test_image is None:
+            return
+
         custom_name_result = model_custom_name.predict(mobilenet_test_image, batch_size=1)[0]
         maxidxname = np.argmax(custom_name_result)
         maxconname = custom_name_result[maxidxname]
@@ -37,24 +45,29 @@ def process_image_and_write_results(writer, fn, model_custom_name, model_custom_
 
         writer.writerow([fn, custom_counts[maxidx], maxcon, custom_names[maxidxname][1], maxconname])
     except Exception as e:
-        logging.exception(f"Exception occurred while processing file {fn}")
+        logging.exception(f"Exception occurred while processing file {fn}: {e}")
 
-list_classes = ["file", "numfursuit", "numfursuitconfidence", "fursuitname", "fursuitnameconfidence"]
-fursuitcountnames=[0, 1, 2, 3]
-
-parser = argparse.ArgumentParser()
-parser.add_argument('targdir', help='Directory to search (input)')
-parser.add_argument('targcsv', help='Output csv file (output)')
-parser.add_argument('--log-level', help='Set the logging level (debug, info, warning, error)', default='info')
-args = parser.parse_args()
-
-# Set up logging based on the command-line argument
-logging_level = getattr(logging, args.log_level.upper(), None)
-if not isinstance(logging_level, int):
-    raise ValueError('Invalid log level: %s' % args.log_level)
-logging.basicConfig(filename='processing.log', level=logging_level, format='%(asctime)s:%(levelname)s:%(message)s')
+def validate_arguments(args):
+    if not os.path.exists(args.targdir):
+        raise ValueError(f"Target directory does not exist: {args.targdir}")
+    if not os.path.isdir(args.targdir):
+        raise ValueError(f"Target directory is not a directory: {args.targdir}")
 
 if __name__ == "__main__":
+    list_classes = ["file", "numfursuit", "numfursuitconfidence", "fursuitname", "fursuitnameconfidence"]
+    fursuitcountnames=[0, 1, 2, 3]
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('targdir', help='Directory to search (input)')
+    parser.add_argument('targcsv', help='Output csv file (output)')
+    parser.add_argument('--log-level', help='Set the logging level (debug, info, warning, error)', default='info')
+    args = parser.parse_args()
+    validate_arguments(args)
+
+    logging_level = getattr(logging, args.log_level.upper(), None)
+    if not isinstance(logging_level, int):
+        raise ValueError('Invalid log level: %s' % args.log_level)
+    logging.basicConfig(filename='processing.log', level=logging_level, format='%(asctime)s:%(levelname)s:%(message)s')
 
     # Open the CSV file using the with statement
     with open(args.targcsv, 'w', newline='') as outputcsvfile:
