@@ -2,7 +2,7 @@
 *.jpg
 apikey.txt
 tempimg.png
-*.pt
+yolo*.pt
 processing.log
 settings_private.ini
 *.csv

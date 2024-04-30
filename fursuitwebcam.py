@@ -16,6 +16,8 @@ import base64
 from openai import OpenAI
 import configparser
 import io
+from yolov5 import YOLOv5
+import colorsys
 
 SCREEN_USAGE=.9
 LABEL_FONT=cv2.FONT_HERSHEY_SIMPLEX
@@ -27,6 +29,7 @@ FPS_INCREMENT = 3
 MIN_FPS = 1
 MAX_FPS = 30
 STICK_USED = 0.8
+STATUS_BAR_HEIGHT = 25
 
 HAT_MAP = {
   (-1, 0): 'left',
@@ -57,18 +60,23 @@ BUTTON_MAP= {
   8: 'pause'
 }
 
-def update_status_bar(screen, model_list_status, modelmode):
-    bar_height = 25
-    screen_width = screen.get_width()
-    section_width = screen_width // len(model_list)
-    active_color = (0, 255, 0)
-    inactive_color = (255, 255, 255)
+def calculate_spread_value(n):
+    value, scale = 0.0, 1.0
+    while n > 0:
+        scale /= 2
+        if n % 2 == 1:
+            value += scale
+        n //= 2
+    return value + scale / 2
 
-    for i, model_name in enumerate(model_list_status):
-        color = active_color if i == modelmode else inactive_color
-        pygame.draw.rect(screen, color, [i * section_width, 0, section_width, bar_height])
-        font = pygame.font.SysFont(None, 24)
-        text = font.render(model_name, True, (0, 0, 0))
+def update_status_bar(screen, model_list_status, modelmode):
+    screen_width = screen.get_width()
+    section_width = screen_width // len(model_list_status)
+    colors = [(0, 255, 0) if i == modelmode else (255, 255, 255) for i in range(len(model_list_status))]
+    
+    for i, (model_name, color) in enumerate(zip(model_list_status, colors)):
+        pygame.draw.rect(screen, color, [i * section_width, 0, section_width, STATUS_BAR_HEIGHT])
+        text = pygame.font.SysFont(None, 24).render(model_name, True, (0, 0, 0))
         screen.blit(text, (i * section_width + 5, 5))
 
 def resize_to(img, target_size):
@@ -123,6 +131,7 @@ async def main():
         custom_names = [row[1] for row in csv_reader]
     custom_model = load_model(custom_file)
     modelyolo = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    modelyolocustom = torch.hub.load('ultralytics/yolov5', 'custom', path='custom.pt')
     screen_width, screen_height=pyautogui.size()
     pausemode=False
     cap = cv2.VideoCapture(0)
@@ -211,6 +220,8 @@ async def main():
             confidence, labelname = zip(*sorted_zipped_lists)
         elif modelmode==2:
             results = modelyolo(image_rgb)
+        elif modelmode==4:
+            results = modelyolocustom(image_rgb)
         image_orig_x, image_orig_y, _ = image_orig.shape
         target_height = screen_height * SCREEN_USAGE
         target_width = target_height*(image_orig_y/image_orig_x)
@@ -220,21 +231,45 @@ async def main():
             for i in range(5):
                 label = f"{labelname[i]} {confidence[i]:.0%}"
                 cv2.putText(image_cv2, label, (20, 75 + i*50), LABEL_FONT, LABEL_SCALE, LABEL_COLOR, LABEL_THICKNESS)
-        elif modelmode ==2:
+        elif modelmode in (2, 4):
             bboxes = results.xyxy[0].cpu().numpy()
             scale_x = target_height/image_orig_x
             scale_y = target_width/image_orig_y
 
             for box in bboxes:
-                x1, y1, x2, y2, conf, cls = box
-                x1 = x1 * scale_x
-                y1 = y1 * scale_y
-                x2 = x2 * scale_x
-                y2 = y2 * scale_y
-                label = results.names[int(cls)]
+                orig_x1, orig_y1, orig_x2, orig_y2, conf, cls = box
+                x1 = orig_x1 * scale_x
+                y1 = orig_y1 * scale_y
+                x2 = orig_x2 * scale_x
+                y2 = orig_y2 * scale_y
+                orig_x1=int(orig_x1)
+                orig_x2=int(orig_x2)
+                orig_y1=int(orig_y1)
+                orig_y2=int(orig_y2)
+                if modelmode == 2:
+                    label = results.names[int(cls)]
+                else: #modelmode ==4
+                    box_img = image_rgb[orig_y1:orig_y2, orig_x1:orig_x2]
+                    box_img = cv2.resize(box_img, (224,224))
+                    box_img = img_to_array(box_img)
+                    box_img = expand_dims(box_img, axis=0)
+                    box_img = preprocess_input(box_img)
+                    rawresult = custom_model.predict(box_img, verbose = 0)
+                    zipped_lists=zip(rawresult[0], custom_names)
+                    sorted_zipped_lists = sorted(zipped_lists, reverse=True)
+                    confidence, labelname = zip(*sorted_zipped_lists)
+                    label = labelname[0]
+                    conf = confidence[0]
                 label_with_conf = f"{label} ({(conf * 100):.0f}%)"
-                cv2.rectangle(image_cv2, (int(x1), int(y1)), (int(x2), int(y2)), LABEL_COLOR, 2)
-                cv2.putText(image_cv2, label_with_conf, (int(x1), int(y1) - 10), LABEL_FONT, LABEL_SCALE, LABEL_COLOR, LABEL_THICKNESS)
+                r, g, b = colorsys.hls_to_rgb(calculate_spread_value(int(cls)), 0.6, 0.9) 
+                spread_colour=int(r * 255), int(g * 255), int(b * 255)
+                cv2.rectangle(image_cv2, (int(x1), int(y1)), (int(x2), int(y2)), spread_colour, 2)
+                text_size, _ = cv2.getTextSize(label_with_conf, LABEL_FONT, LABEL_SCALE, LABEL_THICKNESS)  
+                if int(y1) < STATUS_BAR_HEIGHT + text_size[1] + 3: #cv2 takes coordinate of lower-left of text
+                    y1 = STATUS_BAR_HEIGHT + text_size[1] + 3 #don't put text underneath status bar + a few pixels so it isn't touching it
+                if int(x1) < 3: #ditto. don't actually touch edge of window
+                    x1 = 3
+                cv2.putText(image_cv2, label_with_conf, (int(x1), int(y1) - 10), LABEL_FONT, LABEL_SCALE, spread_colour, LABEL_THICKNESS)
 
         if info_counter > 0:
             info_counter -= 1
@@ -271,5 +306,5 @@ window_title = config.get('Settings', 'window_title', fallback='')
 custom_file = config.get('Custom', 'file', fallback='')
 custom_lookup = config.get('Custom', 'lookup', fallback='')
 custom_name = config.get('Custom', 'name', fallback='')
-model_list = [custom_name, 'Imagenet', 'YOLO', 'ChatGPT -- Press action to post']
+model_list = [custom_name, 'Imagenet', 'YOLO', 'ChatGPT -- Press action to post', 'Custom YOLO']
 asyncio.run(main())

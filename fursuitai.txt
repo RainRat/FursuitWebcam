@@ -4,19 +4,19 @@ Don't have a fursuit? Try a drawing, plush, or an image on your phone.
 
 Models: 
 
-1. Custom fursuit identification model. Knows 1021 fursuits. Message @rainratbot with /activefursuitlist to see them. Taught via @rainratcrowdsourcebot on Telegram. (The copy on this computer was frozen before this convention, so no changes will be reflected until after the con.) 
+1. Custom fursuit identification model. Knows 989 fursuits. Message @rainratbot with /activefursuitlist to see them. Taught via @rainratcrowdsourcebot on Telegram. (The copy on this computer was frozen before this convention, so no changes will be reflected until after the con.) 
 
 2. Imagenet -- An off-the-shelf network that knows 1,000 categories.
 
 3. YOLO -- An off-the-shelf network that can draw a box around the object.
 
-4. ChatGPT Vision -- The computer vision model on OpenAI's servers. The webcam will just display the image. When you press the post button, it will send the image to be processed by OpenAI, then the image will be posted image along with the caption to @furryphotodump on Telegram. OpenAI says that data from the API won't be used to train models.
+4. ChatGPT Vision -- The computer vision model on OpenAI's servers. The webcam will just display the image. When you press the post button, it will send the image to be processed by OpenAI, then the image will be posted image along with the caption to @fursuitwebcambotfeed on Telegram. OpenAI says that data from the API won't be used to train models.
 
 ---
 
 Left or Right - Cycle between models
 
-Action buttons or "d" - Post current image to @furryphotodump on Telegram -- Other than that, nothing on this webcam is streamed or saved.
+Action buttons or "d" - Post current image to @fursuitwebcambotfeed on Telegram -- Other than that, nothing on this webcam is streamed or saved.
 
 Down - Slower
 
